@@ -4,30 +4,39 @@ import 'package:beatbox/presentation/options_draweritem/options_draweritem.dart'
 import 'package:beatbox/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
+import '../../data/models/deezer_resp.dart';
 import '../home_screen/widgets/recommendedforlist_item_widget.dart';
 
-// ignore_for_file: must_be_immutable
 class Homescreen extends StatefulWidget {
-  List<Album>? tracks;
-  Homescreen({Key? key, this.tracks}) : super(key: key);
+  Homescreen({Key? key}) : super(key: key);
 
   @override
   State<Homescreen> createState() => _HomescreenState();
 }
 
-class _HomescreenState extends State<Homescreen> with SingleTickerProviderStateMixin {
+class _HomescreenState extends State<Homescreen>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  MusicAPI? apidata;
+
+  List<Track> tracks = [];
 
   @override
   void initState() {
     super.initState();
+    getTracks();
 
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 2), // Animation duration
     )..repeat();
+  }
+
+  Future<void> getTracks() async {
+    final tracks = await MusicAPI().fetchAlbumTracks();
+
+    this.tracks = tracks;
+    setState(() {});
   }
 
   @override
@@ -164,15 +173,9 @@ class _HomescreenState extends State<Homescreen> with SingleTickerProviderStateM
         child: ListView.builder(
           padding: EdgeInsets.only(left: 28.h),
           scrollDirection: Axis.horizontal,
-          itemCount: widget.tracks?.length,
+          itemCount: tracks.length,
           itemBuilder: (context, index) {
-            if (index == 0) {
-              return SizedBox(
-                width: 19.h,
-              );
-            }
-
-            return RecommendedforlistItemWidget();
+            return RecommendedforlistItemWidget(track: tracks[index]);
           },
         ),
       ),
@@ -313,13 +316,10 @@ class _HomescreenState extends State<Homescreen> with SingleTickerProviderStateM
               height: 250.v,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: widget.tracks?.length,
+                itemCount: tracks.length,
                 itemBuilder: (context, index) {
-                  final track = widget.tracks?[index];
-                  return RecommendedforlistItemWidget(
-                    Imageurl: track?.imageUrl,
-                    albumFutureOr: track,
-                  );
+                  final track = tracks[index];
+                  return RecommendedforlistItemWidget(track: track);
                 },
               ),
             ),
