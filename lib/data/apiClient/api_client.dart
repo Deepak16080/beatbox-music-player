@@ -19,3 +19,26 @@ class MusicAPI {
     }
   }
 }
+
+class Album {
+  final String title;
+  final String artistName;
+  final String imageUrl;
+  final String songPath;
+
+  Album({
+    required this.title,
+    required this.artistName,
+    required this.imageUrl,
+    required this.songPath,
+  });
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+      title: json['title'],
+      artistName: json['artist'] != null ? json['artist']['name'] ?? '' : '',
+      imageUrl: json['cover_big'] ?? '',
+      songPath: json['preview'] ?? '',
+    );
+  }
+}
