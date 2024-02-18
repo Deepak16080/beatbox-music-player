@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:beatbox/Constant/app_color.dart';
 import 'package:beatbox/core/app_export.dart';
-import 'package:beatbox/core/utils/song_constant.dart';
-import 'package:beatbox/presentation/home_screen/models/home_model.dart';
+import 'package:beatbox/data/apiClient/api_client.dart';
 import 'package:beatbox/widgets/app_bar/appbar_title.dart';
 import 'package:beatbox/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -10,26 +11,29 @@ import 'package:just_audio/just_audio.dart';
 
 // ignore_for_file: must_be_immutable
 class PlayingNowScreen extends StatefulWidget {
-  Album? albums;
-
-  PlayingNowScreen({Key? key, this.albums}) : super(key: key);
+  PlayingNowScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<PlayingNowScreen> createState() => _PlayingNowScreenState();
 }
 
 class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerProviderStateMixin {
-  Album? albums;
+  late FutureOr<Album> albumFuture;
+  Album? album;
   AnimationController? controller;
   AudioPlayer? audioPlayer;
   bool isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  double _progress = 0.0;
+  // double _progress = 0.0;
 
   @override
   void initState() {
     super.initState();
+    album = Album(title: '', artistName: '', imageUrl: '', songPath: '');
+
     controller = AnimationController(
       duration: Duration(seconds: 10),
       vsync: this,
@@ -38,14 +42,14 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
     audioPlayer?.positionStream.listen((event) {
       setState(() {
         _position = event;
-        _progress = _position.inMilliseconds / _duration.inMilliseconds;
+        // _progress = _position.inMilliseconds / _duration.inMilliseconds;
       });
     });
   }
 
   void playMusic() {
     audioPlayer = AudioPlayer();
-    audioPlayer?.setUrl(Songconstant.Chunari_Mein_Daag);
+    audioPlayer?.setUrl(album!.songPath);
 
     // audioPlayer?.setUrl('https://www.pagalworld.com.se/files/download/id/69917');
     audioPlayer?.play();
@@ -126,30 +130,38 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
                       height: 263.adaptSize,
                       child: AnimatedBuilder(
                           animation: controller!,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/icons/cd.png'),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: CustomImageView(
+                              imagePath: album?.imageUrl,
+                              height: 211.adaptSize,
+                              width: 165.adaptSize,
+                              fit: BoxFit.cover,
+                              radius: BorderRadius.circular(11.h),
+                              alignment: Alignment.center,
+                            ),
+                          ),
                           builder: (context, snapshot) {
+                            if (controller?.isAnimating == true) {
+                              return Transform.rotate(
+                                angle: controller!.value * 6.3,
+                                child: snapshot,
+                              );
+                            }
+
                             return Stack(
                               children: [
-                                Align(
+                                CustomImageView(
+                                  height: 211.adaptSize,
+                                  width: 165.adaptSize,
+                                  fit: BoxFit.cover,
+                                  radius: BorderRadius.circular(11.h),
                                   alignment: Alignment.center,
-                                  child: RotationTransition(
-                                    turns: controller!,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage('assets/icons/cd.png'),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      child: CustomImageView(
-                                        imagePath: albums?.imagePath,
-                                        height: 211.adaptSize,
-                                        width: 165.adaptSize,
-                                        fit: BoxFit.cover,
-                                        radius: BorderRadius.circular(11.h),
-                                        alignment: Alignment.center,
-                                      ),
-                                    ),
-                                  ),
                                 ),
                               ],
                             );
@@ -167,15 +179,15 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
                           children: [
                             Column(
                               children: [
-                                Text(
-                                  albums?.title ?? "lbl_kabhi_shaam_dhale".tr.toUpperCase(),
-                                  style: CustomTextStyles.headlineSmallMedium,
-                                ),
+                                // Text(
+                                //   album!.title,
+                                //   style: CustomTextStyles.headlineSmallMedium,
+                                // ),
                                 SizedBox(height: 4.v),
-                                Text(
-                                  albums?.artist ?? "lbl_mohammad_faiz".tr,
-                                  style: theme.textTheme.bodyLarge,
-                                ),
+                                // Text(
+                                //   album!.artistName,
+                                //   style: theme.textTheme.bodyLarge,
+                                // ),
                               ],
                             ),
                             IconButton(
@@ -316,14 +328,7 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
                         IconButton(
                             onPressed: () {
                               setState(() {
-                                if (isPlaying) {
-                                  audioPlayer?.pause();
-                                } else {
-                                  audioPlayer?.play();
-                                }
-                                setState(() {
-                                  isPlaying = !isPlaying;
-                                });
+                                isPlaying = !isPlaying;
                               });
                             },
                             icon: Icon(

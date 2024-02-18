@@ -171,11 +171,8 @@ class _HomescreenState extends State<Homescreen> with SingleTickerProviderStateM
                 width: 19.h,
               );
             }
-            final track = widget.tracks?[index];
-            return RecommendedforlistItemWidget(
-              albumFuture: Future.value(track),
-              artistid: index,
-            );
+
+            return RecommendedforlistItemWidget();
           },
         ),
       ),
@@ -320,9 +317,8 @@ class _HomescreenState extends State<Homescreen> with SingleTickerProviderStateM
                 itemBuilder: (context, index) {
                   final track = widget.tracks?[index];
                   return RecommendedforlistItemWidget(
-                    artistid: index,
                     Imageurl: track?.imageUrl,
-                    albumFuture: Future.value(track),
+                    albumFutureOr: track,
                   );
                 },
               ),

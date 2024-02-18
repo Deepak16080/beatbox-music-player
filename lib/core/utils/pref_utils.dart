@@ -1,5 +1,7 @@
 //ignore: unused_import
+import 'dart:async';
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefUtils {
@@ -12,7 +14,7 @@ class PrefUtils {
     });
   }
 
-  Future<void> init() async {
+  FutureOr<void> init() async {
     _sharedPreferences ??= await SharedPreferences.getInstance();
     print('SharedPreference Initialized');
   }
@@ -22,7 +24,7 @@ class PrefUtils {
     _sharedPreferences!.clear();
   }
 
-  Future<void> setThemeData(String value) {
+  FutureOr<void> setThemeData(String value) {
     return _sharedPreferences!.setString('themeData', value);
   }
 
