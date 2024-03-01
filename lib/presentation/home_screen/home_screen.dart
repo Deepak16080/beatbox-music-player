@@ -1,8 +1,18 @@
-import 'package:beatbox/core/app_export.dart';
+import 'package:beatbox/Constant/app_color.dart';
+import 'package:beatbox/core/utils/image_constant.dart';
+import 'package:beatbox/core/utils/size_utils.dart';
+// import 'package:beatbox/core/app_export.dart';
 import 'package:beatbox/data/apiClient/api_client.dart';
 import 'package:beatbox/presentation/options_draweritem/options_draweritem.dart';
+import 'package:beatbox/routes/app_routes.dart';
+import 'package:beatbox/theme/custom_text_style.dart';
+import 'package:beatbox/theme/theme_helper.dart';
+import 'package:beatbox/widgets/anim_search_widget.dart';
 import 'package:beatbox/widgets/app_bar/custom_app_bar.dart';
+import 'package:beatbox/widgets/custom_image_view.dart';
+import 'package:beatbox/widgets/custom_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/export.dart';
 
 import '../../data/models/deezer_resp.dart';
 import '../home_screen/widgets/recommendedforlist_item_widget.dart';
@@ -14,12 +24,33 @@ class Homescreen extends StatefulWidget {
   State<Homescreen> createState() => _HomescreenState();
 }
 
-class _HomescreenState extends State<Homescreen>
-    with SingleTickerProviderStateMixin {
+class _HomescreenState extends State<Homescreen> with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  TextEditingController textController = TextEditingController();
+  bool isdraweopen = false;
+  bool isDarkMode = false;
+  bool isfolded = false;
+  bool _isSearchVisible = false;
+
+  void _toggleSearchBarVisibility() {
+    setState(() {
+      _isSearchVisible = !_isSearchVisible;
+    });
+  }
 
   List<Track> tracks = [];
+  void _toggleTheme() {
+    setState(() {
+      isDarkMode = !isDarkMode;
+    });
+  }
+
+  void toggledrawer() {
+    setState(() {
+      isdraweopen = !isdraweopen;
+    });
+  }
 
   @override
   void initState() {
@@ -45,92 +76,96 @@ class _HomescreenState extends State<Homescreen>
     _animationController.dispose();
   }
 
+  Future<void> _handleRefresh() async {
+    // Simulating data fetching delay
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      getTracks();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: OptionsDraweritem(),
         key: _scaffoldKey,
+        drawer: OptionsDrawerItem(
+          isDarkMode: isDarkMode,
+          toggleTheme: _toggleTheme,
+        ),
         appBar: _buildAppBar(context),
         bottomNavigationBar: _buildComponentTwoStack(),
-        body: SizedBox(
-          width: SizeUtils.width,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(top: 17.v),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 28.h),
-                  child: Text(
-                    "msg_recommended_for".tr,
-                    style: theme.textTheme.headlineSmall,
+        body: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: appTheme.blue5001,
+          backgroundColor: backgroundColor,
+          triggerMode: RefreshIndicatorTriggerMode.anywhere,
+          child: SizedBox(
+            width: SizeUtils.width,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(top: 17.v),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 28.h),
+                    child: Text(
+                      "msg_recommended_for".tr,
+                      style: Ts.bold22(appTheme.blue5001),
+                    ),
                   ),
-                ),
-                SizedBox(height: 17.v),
-                _buildRecommendedForList(),
-                SizedBox(height: 43.v),
-                SizedBox(
-                  height: 472.v,
-                  width: double.maxFinite,
-                  child: Stack(
-                    alignment: Alignment.bottomLeft,
-                    fit: StackFit.loose,
-                    children: [
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
+                  SizedBox(height: 17.v),
+                  _buildRecommendedForList(),
+                  SizedBox(height: 43.v),
+                  SizedBox(
+                    height: 472.v,
+                    width: double.maxFinite,
+                    child: Stack(
+                      alignment: Alignment.bottomLeft,
+                      fit: StackFit.loose,
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: 28.h,
+                              bottom: 120.v,
+                            ),
+                            child: Text(
+                              "lbl_popular_artists".tr,
+                              style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2),
+                            ),
+                          ),
+                        ),
+                        _buildHomeRow(),
+                        Padding(
                           padding: EdgeInsets.only(
-                            left: 28.h,
-                            bottom: 120.v,
+                            left: 30.h,
                           ),
-                          child: Text(
-                            "lbl_popular_artists".tr,
-                            style: theme.textTheme.headlineSmall,
-                          ),
-                        ),
-                      ),
-                      _buildHomeRow(),
-                      // Padding(
-                      //   padding: EdgeInsets.only(left: 30.h,),
-                      //   child: _buildPopularArtistsStack(
-                      //     userImage: ImageConstant.artist1,
-                      //     userName: "lbl_drake".tr,
-                      //   ),
-                      // ),
-                      // Padding(
-                      //   padding: EdgeInsets.only(left: 134.h),
-                      //   child: _buildPopularArtistsStack(
-                      //     userImage: ImageConstant.artist1,
-                      //     userName: "lbl_taylor_swift".tr,
-                      //   ),
-                      // ),
-                      // Padding(
-                      //   padding: EdgeInsets.only(right: 42.h),
-                      //   child: _buildPopularArtistsStack(
-                      //     userImage: ImageConstant.artist1,
-                      //     userName: "lbl_cardi_b".tr,
-                      //   ),
-                      // ),
-
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          height: 42.v,
-                          width: double.maxFinite,
-                          margin: EdgeInsets.only(bottom: 84.v),
-                          decoration: BoxDecoration(
-                            color: appTheme.gray900,
+                          child: _buildPopularArtistsStack(
+                            userImage: ImageConstant.artist1,
+                            userName: "lbl_drake".tr,
                           ),
                         ),
-                      ),
-                      _buildUserProfileList(),
-                    ],
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            height: 42.v,
+                            width: double.maxFinite,
+                            margin: EdgeInsets.only(bottom: 84.v),
+                            decoration: BoxDecoration(
+                              color: appTheme.gray900,
+                            ),
+                          ),
+                        ),
+                        _buildUserProfileList(),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 24.v),
-                _buildHomeRow(),
-              ],
+                  SizedBox(height: 24.v),
+                  _buildHomeRow(),
+                ],
+              ),
             ),
           ),
         ),
@@ -153,13 +188,27 @@ class _HomescreenState extends State<Homescreen>
         },
       ),
       actions: [
-        IconButton(
-            onPressed: () {},
-            icon: Image.asset(
-              ImageConstant.search,
-              height: 20.h,
-              width: 24.h,
-            )),
+        AnimSearchBar(
+          width: 200.h,
+          suffixIcon: Icon(Icons.search, color: Colors.white),
+          prefixIcon: Icon(Icons.search, color: Colors.white),
+          color: Color(0xff091227),
+          searchIconColor: Colors.white,
+          searchBarOpen: (p0) {
+            print(p0);
+          },
+          textController: textController,
+          onSuffixTap: () {
+            setState(() {
+              // _isSearchVisible = !_isSearchVisible;
+            });
+          },
+          rtl: true,
+          onSubmitted: (String value) {
+            debugPrint("onSubmitted value: " + value);
+          },
+          textInputAction: TextInputAction.search,
+        ),
       ],
     );
   }
@@ -175,7 +224,11 @@ class _HomescreenState extends State<Homescreen>
           scrollDirection: Axis.horizontal,
           itemCount: tracks.length,
           itemBuilder: (context, index) {
-            return RecommendedforlistItemWidget(track: tracks[index]);
+            return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.playingnow, arguments: tracks[index]);
+                },
+                child: RecommendedforlistItemWidget(track: tracks[index]));
           },
         ),
       ),
@@ -309,7 +362,7 @@ class _HomescreenState extends State<Homescreen>
           children: [
             Text(
               "lbl_my_playlist".tr,
-              style: theme.textTheme.headlineSmall,
+              style: Ts.bold22(appTheme.blue5001),
             ),
             SizedBox(height: 17.v),
             SizedBox(

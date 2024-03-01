@@ -1,5 +1,5 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+
 import '../../core/app_export.dart';
 
 /// Helper class for managing themes and colors.
@@ -8,14 +8,10 @@ class ThemeHelper {
   var _appTheme = PrefUtils().getThemeData();
 
 // A map of custom color themes supported by the app
-  Map<String, PrimaryColors> _supportedCustomColor = {
-    'primary': PrimaryColors()
-  };
+  Map<String, PrimaryColors> _supportedCustomColor = {'primary': PrimaryColors()};
 
 // A map of color schemes supported by the app
-  Map<String, ColorScheme> _supportedColorScheme = {
-    'primary': ColorSchemes.primaryColorScheme
-  };
+  Map<String, ColorScheme> _supportedColorScheme = {'primary': ColorSchemes.primaryColorScheme};
 
   /// Changes the app theme to [_newTheme].
   void changeTheme(String _newTheme) {
@@ -42,15 +38,12 @@ class ThemeHelper {
       throw Exception(
           "$_appTheme is not found.Make sure you have added this theme class in JSON Try running flutter pub run build_runner");
     }
-    
 
-    var colorScheme =
-        _supportedColorScheme[_appTheme] ?? ColorSchemes.primaryColorScheme;
+    var colorScheme = _supportedColorScheme[_appTheme] ?? ColorSchemes.primaryColorScheme;
     return ThemeData(
       visualDensity: VisualDensity.standard,
       colorScheme: colorScheme,
       textTheme: TextThemes.textTheme(colorScheme),
-      scaffoldBackgroundColor: appTheme.gray900,
       dividerTheme: DividerThemeData(
         thickness: 4,
         space: 4,
@@ -163,3 +156,30 @@ class PrimaryColors {
 
 PrimaryColors get appTheme => ThemeHelper().themeColor();
 ThemeData get theme => ThemeHelper().themeData();
+
+ThemeData ligtmode = ThemeData(
+  visualDensity: VisualDensity.standard,
+  colorScheme: ColorSchemes.primaryColorScheme,
+  textTheme: TextThemes.textTheme(ColorSchemes.primaryColorScheme),
+  scaffoldBackgroundColor: appTheme.gray900,
+  dividerTheme: DividerThemeData(
+    thickness: 4,
+    space: 4,
+    color: appTheme.whiteA700.withOpacity(0.31),
+  ),
+);
+
+ThemeData darkmode = ThemeData(
+  visualDensity: VisualDensity.standard,
+  colorScheme: ColorScheme.dark(),
+  textTheme: TextThemes.textTheme(ColorScheme.dark()),
+  scaffoldBackgroundColor: appTheme.gray900,
+  dividerTheme: DividerThemeData(
+    thickness: 4,
+    space: 4,
+    color: appTheme.whiteA700.withOpacity(0.31),
+  ),
+);
+
+ThemeData get lightMode => ligtmode;
+ThemeData get darkMode => darkmode;

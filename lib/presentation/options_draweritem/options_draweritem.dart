@@ -1,43 +1,49 @@
 import 'package:beatbox/Constant/app_color.dart';
 import 'package:beatbox/core/app_export.dart';
+import 'package:beatbox/widgets/custom_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // ignore_for_file: must_be_immutable
-class OptionsDraweritem extends StatelessWidget {
-  bool isDarkMode = false;
-  OptionsDraweritem({Key? key}) : super(key: key);
+class OptionsDrawerItem extends StatelessWidget {
+  bool isDarkMode;
+  final Function toggleTheme;
+  OptionsDrawerItem({Key? key, required this.isDarkMode, required this.toggleTheme}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
         child: Container(
-            color: backgroundColor,
             padding: EdgeInsets.symmetric(horizontal: 25.h, vertical: 36.v),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                CustomImageView(
-                    imagePath: ImageConstant.close,
-                    height: 16.adaptSize,
-                    width: 16.adaptSize,
-                    margin: EdgeInsets.only(bottom: 7.v),
-                    onTap: () {
-                      onTapImgClose();
-                    }),
+                IconButton(
+                  onPressed: () {
+                    onTapImgClose();
+                  },
+                  icon: FaIcon(
+                    // ignore: deprecated_member_use
+                    FontAwesomeIcons.times,
+                    color: iconcolor,
+                  ),
+                ),
                 Spacer(),
                 IconButton(
                     onPressed: () {
-                      isDarkMode = !isDarkMode;
+                      toggleTheme;
+                      print(isDarkMode);
                     },
                     icon: Icon(
-                      isDarkMode ? Icons.brightness_4_outlined : Icons.dark_mode_outlined,
-                      color: iconcolor,
+                      isDarkMode ? Icons.wb_sunny_outlined : Icons.dark_mode_outlined,
+                      color: isDarkMode ? Colors.white : iconcolor,
                       size: 24.h,
                     ))
               ]),
               SizedBox(height: 42.v),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.profile);
+                },
                 child: Row(children: [
                   Icon(
                     Icons.person_2_outlined,
@@ -45,12 +51,14 @@ class OptionsDraweritem extends StatelessWidget {
                   ),
                   Padding(
                       padding: EdgeInsets.only(left: 30.h),
-                      child: Text("lbl_profile".tr, style: theme.textTheme.titleLarge))
+                      child: Text("lbl_profile".tr, style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2)))
                 ]),
               ),
               SizedBox(height: 34.v),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.likedsongs);
+                },
                 child: Row(children: [
                   Icon(
                     Icons.favorite_border_outlined,
@@ -58,12 +66,14 @@ class OptionsDraweritem extends StatelessWidget {
                   ),
                   Padding(
                       padding: EdgeInsets.only(left: 28.h),
-                      child: Text("lbl_liked_songs".tr, style: theme.textTheme.titleLarge))
+                      child: Text("lbl_liked_songs".tr, style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2)))
                 ]),
               ),
               SizedBox(height: 32.v),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.language);
+                },
                 child: Row(children: [
                   FaIcon(
                     FontAwesomeIcons.earthAsia,
@@ -71,12 +81,14 @@ class OptionsDraweritem extends StatelessWidget {
                   ),
                   Padding(
                       padding: EdgeInsets.only(left: 30.h),
-                      child: Text("lbl_language".tr, style: theme.textTheme.titleLarge))
+                      child: Text("lbl_language".tr, style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2)))
                 ]),
               ),
               SizedBox(height: 29.v),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.Contactus);
+                },
                 child: Row(children: [
                   FaIcon(
                     FontAwesomeIcons.message,
@@ -84,27 +96,31 @@ class OptionsDraweritem extends StatelessWidget {
                   ),
                   Padding(
                       padding: EdgeInsets.only(left: 30.h),
-                      child: Text("lbl_contact_us".tr, style: theme.textTheme.titleLarge))
+                      child: Text("lbl_contact_us".tr, style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2)))
                 ]),
               ),
               SizedBox(height: 32.v),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.faq);
+                },
                 child: Row(children: [
                   Icon(Icons.help_outline, color: iconcolor),
                   Padding(
                       padding: EdgeInsets.only(left: 30.h),
-                      child: Text("lbl_faqs".tr, style: theme.textTheme.titleLarge))
+                      child: Text("lbl_faqs".tr, style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2)))
                 ]),
               ),
               SizedBox(height: 33.v),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.settings);
+                },
                 child: Row(children: [
                   Icon(Icons.settings_outlined, color: iconcolor),
                   Padding(
                       padding: EdgeInsets.only(left: 30.h),
-                      child: Text("lbl_settings".tr, style: theme.textTheme.titleLarge))
+                      child: Text("lbl_settings".tr, style: Ts.semiBold18(isDarkMode ? textcolor : textcolor2)))
                 ]),
               ),
               SizedBox(height: 33.v)

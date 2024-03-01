@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:beatbox/Constant/app_color.dart';
 import 'package:beatbox/core/app_export.dart';
-import 'package:beatbox/data/apiClient/api_client.dart';
+import 'package:beatbox/data/models/deezer_resp.dart';
 import 'package:beatbox/widgets/app_bar/appbar_title.dart';
 import 'package:beatbox/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -11,47 +9,38 @@ import 'package:just_audio/just_audio.dart';
 
 // ignore_for_file: must_be_immutable
 class PlayingNowScreen extends StatefulWidget {
-  PlayingNowScreen({
-    Key? key,
-  }) : super(key: key);
+  final Track? track;
+  PlayingNowScreen({Key? key, this.track}) : super(key: key);
 
   @override
   State<PlayingNowScreen> createState() => _PlayingNowScreenState();
 }
 
 class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerProviderStateMixin {
-  late FutureOr<Album> albumFuture;
-  Album? album;
   AnimationController? controller;
   AudioPlayer? audioPlayer;
   bool isPlaying = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
+  Track? selectedtrack;
+
   // double _progress = 0.0;
 
   @override
   void initState() {
     super.initState();
-    album = Album(title: '', artistName: '', imageUrl: '', songPath: '');
-
+    selectedtrack;
     controller = AnimationController(
       duration: Duration(seconds: 10),
       vsync: this,
     )..repeat();
-    playMusic();
-    audioPlayer?.positionStream.listen((event) {
-      setState(() {
-        _position = event;
-        // _progress = _position.inMilliseconds / _duration.inMilliseconds;
-      });
-    });
+
+    audioPlayer?.play();
+    audioPlayer?.setUrl(selectedtrack?.preview ?? "");
+    audioPlayer?.positionStream.listen((event) {});
   }
 
   void playMusic() {
     audioPlayer = AudioPlayer();
-    audioPlayer?.setUrl(album!.songPath);
-
-    // audioPlayer?.setUrl('https://www.pagalworld.com.se/files/download/id/69917');
+    audioPlayer?.setUrl(selectedtrack?.preview ?? "");
     audioPlayer?.play();
   }
 
@@ -118,93 +107,60 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.only(right: 29.h),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: 20.h),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 263.adaptSize,
-                      child: AnimatedBuilder(
-                          animation: controller!,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/icons/cd.png'),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child: CustomImageView(
-                              imagePath: album?.imageUrl,
-                              height: 211.adaptSize,
-                              width: 165.adaptSize,
-                              fit: BoxFit.cover,
-                              radius: BorderRadius.circular(11.h),
-                              alignment: Alignment.center,
-                            ),
-                          ),
-                          builder: (context, snapshot) {
-                            if (controller?.isAnimating == true) {
-                              return Transform.rotate(
-                                angle: controller!.value * 6.3,
-                                child: snapshot,
-                              );
-                            }
-
-                            return Stack(
-                              children: [
-                                CustomImageView(
-                                  height: 211.adaptSize,
-                                  width: 165.adaptSize,
-                                  fit: BoxFit.cover,
-                                  radius: BorderRadius.circular(11.h),
-                                  alignment: Alignment.center,
-                                ),
-                              ],
-                            );
-                          }),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20.h),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Expanded(
+                  child: Container(
+                    child: CustomImageView(
+                      imagePath: ImageConstant.Baarish_Ke_Aane_Se,
+                      height: 211.adaptSize,
+                      width: 165.adaptSize,
+                      fit: BoxFit.cover,
+                      radius: BorderRadius.circular(11.h),
+                      alignment: Alignment.center,
                     ),
-                    SizedBox(height: 24.v),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        width: 220.h,
-                        margin: EdgeInsets.only(left: 77.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                // Text(
-                                //   album!.title,
-                                //   style: CustomTextStyles.headlineSmallMedium,
-                                // ),
-                                SizedBox(height: 4.v),
-                                // Text(
-                                //   album!.artistName,
-                                //   style: theme.textTheme.bodyLarge,
-                                // ),
-                              ],
-                            ),
-                            IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.favorite_border,
-                                  color: iconcolor,
-                                ))
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 24.v),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  width: 220.h,
+                  margin: EdgeInsets.only(left: 77.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            selectedtrack?.title ?? "",
+                            style: CustomTextStyles.headlineSmallMedium,
+                          ),
+                          SizedBox(height: 4.v),
+                          Text(
+                            selectedtrack?.artist?.name ?? "",
+                            style: CustomTextStyles.bodySmall12,
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.favorite_border,
+                            color: iconcolor,
+                          ))
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -256,7 +212,7 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
             style: CustomTextStyles.bodySmall12,
           ),
           Text(
-            "lbl_03_00".tr,
+            "lbl_04_00".tr,
             style: CustomTextStyles.bodySmall12,
           ),
         ],
@@ -328,6 +284,7 @@ class _PlayingNowScreenState extends State<PlayingNowScreen> with SingleTickerPr
                         IconButton(
                             onPressed: () {
                               setState(() {
+                                playMusic();
                                 isPlaying = !isPlaying;
                               });
                             },

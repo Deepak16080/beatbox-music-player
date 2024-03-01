@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 
 import 'core/app_export.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -15,14 +18,17 @@ class MyApp extends StatelessWidget {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: theme,
+
+        themeMode: ThemeMode.system,
+        darkTheme: darkMode,
         translations: AppLocalization(),
         locale: Get.deviceLocale, //for setting localization strings
         fallbackLocale: Locale('en', 'US'),
         title: 'beatbox',
-        initialRoute: AppRoutes.home,
+        initialRoute: AppRoutes.login,
         getPages: AppRoutes.pages,
       );
     });
   }
-}
+}  
+

@@ -17,7 +17,16 @@ dependencies:
   http: ^1.2.0
   font_awesome_flutter: ^10.7.0
   just_audio: ^0.9.36
-  
+  custom_text: ^2.0.1
+  animated_search_bar: ^2.7.1
+  webview_flutter: ^4.7.0
+  google_fonts: ^6.1.0
+  intl_phone_field: ^3.2.0
+  # flutter_login: ^5.0.0
+  # firebase_core: ^2.24.2
+  # firebase_auth: ^4.16.0
+
+
   
 dev_dependencies: 
   flutter_test: 

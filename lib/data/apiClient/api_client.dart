@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:beatbox/data/models/deezer_resp.dart';
 import 'package:http/http.dart' as http;
 
-final apiurl = 'https://api.deezer.com/album/302127';
+final apiurl = 'https://api.deezer.com/album/302128';
 
 class MusicAPI {
   Future<List<Track>> fetchAlbumTracks() async {
